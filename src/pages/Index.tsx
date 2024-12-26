@@ -39,7 +39,7 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <main className="flex-1 flex flex-col max-w-4xl w-full mx-auto">
         <MessageList messages={messages} loading={loading} />
         <ChatInput onSend={handleSend} disabled={loading} />
