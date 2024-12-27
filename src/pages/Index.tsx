@@ -2,17 +2,20 @@ import { useState } from 'react';
 import { MessageList } from '@/components/MessageList';
 import { ChatInput } from '@/components/ChatInput';
 import type { Message } from '@/lib/types';
+import { generateChatResponse } from '@/lib/openai';
+import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hello! I'm your AI assistant. I can help you with various tasks and respond using **Markdown** formatting.\n\nFor example:\n- Lists\n- *Italic text*\n- **Bold text**\n- `Code blocks`",
+      content: "Hello! I'm your AI assistant. How can I help you today?",
       role: 'assistant',
       timestamp: new Date(),
     },
   ]);
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleSend = async (content: string) => {
     // Add user message
@@ -25,17 +28,24 @@ const Index = () => {
     setMessages(prev => [...prev, userMessage]);
     setLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      const response = await generateChatResponse(content);
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: "I received your message! This is a simulated response that shows Markdown support:\n\n```typescript\nconsole.log('Hello, World!');\n```\n\nYou can connect this to a real AI API later!",
+        content: response,
         role: 'assistant',
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate response. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
