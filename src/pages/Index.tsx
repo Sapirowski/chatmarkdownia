@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { MessageList } from '@/components/MessageList';
 import { ChatInput } from '@/components/ChatInput';
+import { ClearChatButton } from '@/components/ClearChatButton';
 import type { Message } from '@/lib/types';
 import { generateChatResponse } from '@/lib/openai';
 import { useToast } from '@/components/ui/use-toast';
@@ -62,10 +63,22 @@ const Index = () => {
     }
   };
 
+  const handleClearChat = () => {
+    setMessages([{
+      id: '1',
+      content: "Hello! I'm your AI assistant. How can I help you today?",
+      role: 'assistant',
+      timestamp: new Date(),
+    }]);
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
       <main className="flex-1 flex flex-col max-w-4xl w-full mx-auto relative">
         <div className="flex-1 overflow-hidden">
+          <div className="flex justify-end p-4">
+            <ClearChatButton onClear={handleClearChat} />
+          </div>
           <MessageList messages={messages} loading={loading} />
         </div>
         <div className="sticky bottom-0 w-full">
