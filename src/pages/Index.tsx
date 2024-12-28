@@ -29,14 +29,28 @@ const Index = () => {
     setLoading(true);
 
     try {
-      const response = await generateChatResponse(content);
+      // Create a new AI message with empty content
+      const aiMessageId = (Date.now() + 1).toString();
       const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: response,
+        id: aiMessageId,
+        content: '',
         role: 'assistant',
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, aiMessage]);
+
+      // Handle streaming response
+      await generateChatResponse(content, (chunk) => {
+        setMessages(prev => prev.map(msg => {
+          if (msg.id === aiMessageId) {
+            return {
+              ...msg,
+              content: msg.content + chunk
+            };
+          }
+          return msg;
+        }));
+      });
     } catch (error) {
       toast({
         title: "Error",
